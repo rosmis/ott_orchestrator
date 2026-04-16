@@ -11,5 +11,6 @@ done
 php artisan key:generate
 php artisan migrate --force
 php artisan db:seed --force
+composer install
 
 exec docker-php-entrypoint "$@"

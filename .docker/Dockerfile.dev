@@ -1,0 +1,41 @@
+FROM dunglas/frankenphp:php8.3-bookworm
+
+ENV SERVER_NAME="localhost:80"
+
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    git \
+    unzip \
+    librabbitmq-dev \
+    libpq-dev \
+    supervisor
+
+RUN install-php-extensions \
+    gd \
+    pcntl \
+    opcache \
+    sqlite3 \
+    pdo_sqlite
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /app
+
+# Copy the Laravel application files into the container.
+COPY . .
+
+# Start with base PHP config, then add extensions.
+COPY ./.docker/php.ini /usr/local/etc/php/
+COPY ./.docker/entrypoint.sh /entrypoint.sh
+
+# Install Laravel dependencies using Composer.
+RUN composer install
+
+# Set permissions
+RUN chown -R www-data:www-data /app \
+    && chmod -R 755 /app/storage
+
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

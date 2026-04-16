@@ -1,7 +1,7 @@
 services:
   web:
     build:
-      context: ./wedotv_ott_back
+      context: .
       dockerfile: ./.docker/Dockerfile.dev
     volumes:
       - './wedotv_ott_back/.env:/var/www/html/.env'

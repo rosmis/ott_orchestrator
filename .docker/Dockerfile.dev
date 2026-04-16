@@ -28,9 +28,6 @@ COPY . .
 COPY ./.docker/php.ini /usr/local/etc/php/
 COPY ./.docker/entrypoint.sh /entrypoint.sh
 
-# Install Laravel dependencies using Composer.
-RUN composer install
-
 # Set permissions
 RUN chown -R www-data:www-data /app \
     && chmod -R 755 /app/storage
